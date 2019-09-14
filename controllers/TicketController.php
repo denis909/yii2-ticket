@@ -10,6 +10,8 @@ use ricco\ticket\forms\TicketHeadForm as TicketHead;
 use ricco\ticket\models\UploadForm;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
+use yii\web\ForbiddenHttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * Default controller for the `ticket` module
@@ -56,34 +58,53 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
     {
         $ticket = TicketHead::findOne($id);
 
-        if ($ticket && $ticket->status == TicketHead::STATUS_ANSWER) {
+        if (!$ticket)
+        {
+            throw new NotFoundHttpException('Ticket not found.');
+        }
+
+        if ($ticket->user_id != Yii::$app->ticket->userId)
+        {
+            throw new ForbiddenHttpException('Access denied.');
+        }
+
+        if ($ticket->status == TicketHead::STATUS_ANSWER)
+        {
             $ticket->status = TicketHead::STATUS_VIEWED;
+
             $ticket->save();
         }
 
-        $thisTicket = TicketBody::find()->where(['id_head' => $id])->joinWith('file')->orderBy('date DESC')->all();
-
-        if (!$ticket || !$thisTicket) {
-            return $this->actionIndex();
-        }
+        $thisTicket = TicketBody::find()
+            ->where(['id_head' => $id])
+            ->joinWith('file')
+            ->orderBy('date ASC')
+            ->all();
 
         $newTicket = new TicketBody();
+    
         $ticketFile = new TicketFile();
         
-        if (\Yii::$app->request->post() && $newTicket->load(\Yii::$app->request->post()) && $newTicket->validate()) {
+        if (Yii::$app->request->post() && $newTicket->load(Yii::$app->request->post()) && $newTicket->validate()) {
 
             $ticket->status = TicketHead::STATUS_WAIT;
 
             $uploadForm = new UploadForm();
+            
             $uploadForm->imageFiles = UploadedFile::getInstances($ticketFile, 'fileName');
 
-            if ($ticket->save() && $uploadForm->upload()) {
+            if ($ticket->save() && $uploadForm->upload())
+            {
                 $newTicket->id_head = $id;
+                
                 $newTicket->save();
 
                 TicketFile::saveImage($newTicket, $uploadForm);
-            } else {
-                \Yii::$app->session->setFlash('error', $uploadForm->firstErrors['imageFiles']);
+            }
+            else
+            {
+                Yii::$app->session->setFlash('error', $uploadForm->firstErrors['imageFiles']);
+                
                 return $this->render('view', [
                     'thisTicket' => $thisTicket,
                     'newTicket' => $newTicket,
@@ -91,7 +112,8 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
                 ]);
             }
 
-            if (\Yii::$app->request->isAjax) {
+            if (Yii::$app->request->isAjax)
+            {
                 return 'OK';
             }
 
