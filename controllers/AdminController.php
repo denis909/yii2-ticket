@@ -9,12 +9,11 @@ use ricco\ticket\models\User;
 use ricco\ticket\Module;
 use Yii;
 use yii\helpers\Url;
-use yii\web\Controller;
 
 /**
  * @property Module $module
  */
-class AdminController extends Controller
+class AdminController extends \ricco\ticket\components\BaseAdminController
 {
     /**
      * Выдорка всех тикетов

@@ -6,35 +6,14 @@ use ricco\ticket\models\TicketBody;
 use ricco\ticket\models\TicketFile;
 use ricco\ticket\models\TicketHead;
 use ricco\ticket\models\UploadForm;
-use yii\filters\AccessControl;
-use yii\filters\AccessRule;
 use yii\helpers\Url;
-use yii\web\Controller;
 use yii\web\UploadedFile;
 
 /**
  * Default controller for the `ticket` module
  */
-class TicketController extends Controller
+class TicketController extends \ricco\ticket\components\BaseMemberController
 {
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'ruleConfig' => [
-                    'class' => AccessRule::className(),
-                ],
-                'rules' => [
-                    [
-                        'actions' => ['index', 'view', 'open'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-        ];
-    }
 
     /**
      * Renders the index view for the module
