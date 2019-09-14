@@ -35,8 +35,8 @@ class TicketFile extends \yii\db\ActiveRecord
             [
                 ['id_body'],
                 'exist',
-                'skipOnError'     => true,
-                'targetClass'     => TicketBody::className(),
+                'skipOnError' => true,
+                'targetClass' => TicketBody::className(),
                 'targetAttribute' => ['id_body' => 'id'],
             ],
         ];
@@ -48,8 +48,8 @@ class TicketFile extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'       => Yii::t('ticket', 'ID'),
-            'id_body'  => Yii::t('ticket', 'Id Body'),
+            'id' => Yii::t('ticket', 'ID'),
+            'id_body' => Yii::t('ticket', 'Id Body'),
             'fileName' => Yii::t('ticket', 'File Name'),
             'document_name' => Yii::t('ticket', 'Document name'),
         ];

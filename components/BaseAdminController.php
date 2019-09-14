@@ -2,6 +2,7 @@
 
 namespace ricco\ticket\components;
 
+use Yii;
 use yii\filters\AccessControl;
 
 abstract class BaseAdminController extends \yii\web\Controller
@@ -18,14 +19,19 @@ abstract class BaseAdminController extends \yii\web\Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'matchCallback' => function ($rule, $action) {
+                        'matchCallback' => function($rule, $action) {
 
-                            if (!in_array(Yii::$app->user->getId(), $this->module->adminId)) {
-                                
-                                return false;
+                            $userComponent = Yii::$app->ticket->adminUserComponent;
+
+                            if (!Yii::$app->{$userComponent}->isGuest)
+                            {
+                                if (in_array(Yii::$app->{$userComponent}->identity->username, Yii::$app->ticket->admin))
+                                {                           
+                                    return true;
+                                }                        
                             }
 
-                            return true;
+                            return false;
                         }
                     ]
                 ]

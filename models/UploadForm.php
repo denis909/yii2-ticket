@@ -9,41 +9,32 @@ use ricco\ticket\Module;
 
 class UploadForm extends Model
 {
+
     /**
      * @var UploadedFile
      */
     public $imageFiles;
     public $nameFile;
 
-    /** @var  Module */
-    private $module;
-
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        $this->module = Module::getInstance();
-        parent::init();
-    }
-
     public function rules()
     {
         return [
             [['imageFiles'], 'file',
                 'skipOnEmpty' => true,
-                'extensions' => $this->module->uploadFilesExtensions,
-                'maxFiles' => $this->module->uploadFilesMaxFiles,
-                'maxSize' => $this->module->uploadFilesMaxSize
+                'extensions' => Yii::$app->ticket->uploadFilesExtensions,
+                'maxFiles' => Yii::$app->ticket->uploadFilesMaxFiles,
+                'maxSize' => Yii::$app->ticket->uploadFilesMaxSize
             ],
         ];
     }
 
     public function upload()
     {
-        if ($this->validate()) {
-            $dir = $this->module->uploadFilesDirectory;
-            $dirReduced = $this->module->uploadFilesDirectory.'/reduced';
+        if ($this->validate())
+        {
+            $dir = Yii::$app->ticket->uploadFilesDirectory;
+        
+            $dirReduced = Yii::$app->ticket->uploadFilesDirectory.'/reduced';
 
             if (!file_exists(Yii::getAlias($dir))) {
                 mkdir(Yii::getAlias($dir));
@@ -101,15 +92,15 @@ class UploadForm extends Model
         $isrc = $icfunc($src);
         $idest = imagecreatetruecolor($new_w, $new_h);
 
-        imagecopyresampled($idest, $isrc, 0, 0, 0, 0,
-            $new_w, $new_h, $width, $height);
+        imagecopyresampled($idest, $isrc, 0, 0, 0, 0, $new_w, $new_h, $width, $height);
 
         imagejpeg($idest, $src, 100);
     }
 
-	    protected function isImage($src)
+    protected function isImage($src)
     {
         $mimeType = mime_content_type($src);
+        
         return substr($mimeType, 0, 5) == 'image';
     }
 	

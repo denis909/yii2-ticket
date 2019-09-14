@@ -2,9 +2,11 @@
 
 namespace ricco\ticket\controllers;
 
-use ricco\ticket\models\TicketBody;
+use Yii;
+use yii\data\ActiveDataProvider;
+use ricco\ticket\forms\TicketBodyForm as TicketBody;
 use ricco\ticket\models\TicketFile;
-use ricco\ticket\models\TicketHead;
+use ricco\ticket\forms\TicketHeadForm as TicketHead;
 use ricco\ticket\models\UploadForm;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
@@ -21,8 +23,22 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
      */
     public function actionIndex()
     {
-        $dataProvider = (new TicketHead())->dataProviderUser();
+        $query = TicketHead::find()->where("user_id = " . Yii::$app->{Yii::$app->ticket->userComponent}->id);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'date_update' => SORT_DESC
+                ]
+            ],
+            'pagination' => [
+                'pageSize' => Yii::$app->ticket->pageSize
+            ]
+        ]);
+
         Url::remember();
+        
         return $this->render('index', ['dataProvider' => $dataProvider]);
     }
 
@@ -39,8 +55,9 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
     public function actionView($id)
     {
         $ticket = TicketHead::findOne($id);
-        if ($ticket && $ticket->status == TicketHead::ANSWER) {
-            $ticket->status = TicketHead::VIEWED;
+
+        if ($ticket && $ticket->status == TicketHead::STATUS_ANSWER) {
+            $ticket->status = TicketHead::STATUS_VIEWED;
             $ticket->save();
         }
 
@@ -55,7 +72,7 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
         
         if (\Yii::$app->request->post() && $newTicket->load(\Yii::$app->request->post()) && $newTicket->validate()) {
 
-            $ticket->status = TicketHead::WAIT;
+            $ticket->status = TicketHead::STATUS_WAIT;
 
             $uploadForm = new UploadForm();
             $uploadForm->imageFiles = UploadedFile::getInstances($ticketFile, 'fileName');
@@ -84,7 +101,8 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
         return $this->render('view', [
             'thisTicket' => $thisTicket,
             'newTicket' => $newTicket,
-            'fileTicket' => $ticketFile
+            'fileTicket' => $ticketFile,
+            'ticketHead' => $ticket
         ]);
     }
 
@@ -100,26 +118,39 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
      */
     public function actionOpen()
     {
-        $ticketHead = new TicketHead();
-        $ticketBody = new TicketBody();
-        $ticketFile = new TicketFile();
+        $ticketHead = new TicketHead;
 
-        if(\Yii::$app->request->post()) {
-            $ticketHead->load(\Yii::$app->request->post());
-            $ticketBody->load(\Yii::$app->request->post());
+        $ticketHead->user_id = Yii::$app->ticket->userId;
 
-            if ($ticketBody->validate() && $ticketHead->validate()) {
-                if ($ticketHead->save()) {
+        $ticketBody = new TicketBody;
+        
+        $ticketFile = new TicketFile;
+
+        if (Yii::$app->request->post())
+        {
+            $ticketHead->load(Yii::$app->request->post());
+            
+            $ticketBody->load(Yii::$app->request->post());
+
+            if ($ticketBody->validate() && $ticketHead->validate())
+            {
+                if ($ticketHead->save())
+                {
                     $ticketBody->id_head = $ticketHead->getPrimaryKey();
+                    
                     $ticketBody->save();
 
                     $uploadForm = new UploadForm();
+                    
                     $uploadForm->imageFiles = UploadedFile::getInstances($ticketFile, 'fileName');
-                    if ($uploadForm->upload()) {
+                    
+                    if ($uploadForm->upload())
+                    {
                         TicketFile::saveImage($ticketBody, $uploadForm);
                     }
 
-                    if (\Yii::$app->request->isAjax) {
+                    if (Yii::$app->request->isAjax)
+                    {
                         return 'OK';
                     }
 
@@ -131,8 +162,7 @@ class TicketController extends \ricco\ticket\components\BaseMemberController
         return $this->render('open', [
             'ticketHead' => $ticketHead,
             'ticketBody' => $ticketBody,
-            'qq' => $this->module->qq,
-            'fileTicket' => $ticketFile,
+            'fileTicket' => $ticketFile
         ]);
     }
 }

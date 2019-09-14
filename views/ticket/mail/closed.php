@@ -9,13 +9,13 @@ use ricco\ticket\models\TicketHead;
     <strong><?= Yii::t('ticket', 'Status') ?>:&nbsp;</strong>
     <?php
     switch ($status) {
-        case TicketHead::OPEN :
+        case TicketHead::STATUS_OPEN :
             echo Yii::t('ticket', 'Open');break;
-        case TicketHead::WAIT :
+        case TicketHead::STATUS_WAIT :
             echo Yii::t('ticket', 'Waiting');break;
-        case TicketHead::ANSWER :
+        case TicketHead::STATUS_ANSWER :
             echo Yii::t('ticket', 'Answer');break;
-        case TicketHead::CLOSED :
+        case TicketHead::STATUS_CLOSED :
             echo Yii::t('ticket', 'Close');break;
     }
     ?>

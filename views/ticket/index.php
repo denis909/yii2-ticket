@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Url;
 use ricco\ticket\models\TicketHead;
 
@@ -6,60 +7,47 @@ use ricco\ticket\models\TicketHead;
 
 $this->title = 'Support';
 
-$this->registerJs("
+$this->params['enableCard'] = true;
 
-    $('td').click(function (e) {
-        var id = $(this).closest('tr').data('id');
-        if(e.target == this)
-           location.href = '" . Url::toRoute(['ticket/view', 'id' => '']) . "' + id ;
-    });
+$this->params['cardTitle'] = 'Tickets';
 
-");
-?>
-<div class="panel page-block">
-    <div class="container-fluid row">
-        <div class="col-lg-12">
-            <a type="button" href="<?= Url::to(['ticket/open']) ?>" class="btn btn-primary pull-right"
-               style="margin-right: 10px"><?= Yii::t('ticket', 'Open New Ticket') ?></a>
-            <div class="clearfix" style="margin-bottom: 10px"></div>
-            <div>
-                <?= \yii\grid\GridView::widget([
-                    'dataProvider' => $dataProvider,
-                    'rowOptions'   => function ($model) {
-                        return ['data-id' => $model->id, 'class' => 'ticket'];
-                    },
-                    'columns'      => [
-                        'department',
-                        'topic',
-                        [
-                            'contentOptions' => [
-                                'style' => 'text-align:center;',
-                            ],
-                            'value'          => function ($model) {
-                                switch ($model['status']) {
-                                    case TicketHead::OPEN :
-                                        return '<div class="label label-default">'.Yii::t('ticket', 'Open').'</div>';
-                                    case TicketHead::WAIT :
-                                        return '<div class="label label-warning">'.Yii::t('ticket', 'In progress').'</div>';
-                                    case TicketHead::ANSWER :
-                                        return '<div class="label label-success">'.Yii::t('ticket', 'Answer').'</div>';
-                                    case TicketHead::CLOSED :
-                                        return '<div class="label label-info">'.Yii::t('ticket', 'Close').'</div>';
-                                }
-                            },
-                            'format'         => 'html',
-                        ],
-                        [
-                            'contentOptions' => [
-                                'style' => 'text-align:right; font-size:13px',
-                            ],
-                            'attribute'      => 'date_update',
-                            'value'          => "date_update",
-                        ],
-                    ],
-                ]) ?>
-            </div>
-        </div>
-    </div>
-</div>
+$this->params['actionMenu'][] = [
+    'label' => Yii::t('ticket', 'New Ticket'),
+    'url' => Url::to(['ticket/open'])
+];
 
+echo Yii::$app->theme->gridView([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        'topic',
+        [
+            'attribute' => 'department',
+            'value' => function($model) {
+                
+                return $model->departmentName;
+            }
+        ],
+        [
+            'attribute' => 'status',
+            'contentOptions' => [
+                'style' => 'text-align:center;',
+            ],
+            'value' => function ($model) {
+
+                return '<div class="label label-' . $model->statusLabel. '">' . $model->statusName . '</div>';
+            },
+            'format' => 'html'
+        ],
+        [
+            'contentOptions' => [
+                'style' => 'text-align:right; width: 1%; white-space: nowrap;'
+            ],
+            'attribute' => 'date_update',
+            'format' => ['date', 'php:d.m.y H:i']
+        ],          
+        [
+            'class' => Yii::$app->theme::ACTION_COLUMN,
+            'template' => '{view}'
+        ]
+    ]
+]);
