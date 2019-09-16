@@ -25,7 +25,7 @@ return [
     'Date' => '',
     'Date Updated' => '',
     'Delete' => '',
-    'Departament' => '',
+    'Department' => '',
     'Developer' => '',
     'Do you really want to delete?' => '',
     'Document name' => '',

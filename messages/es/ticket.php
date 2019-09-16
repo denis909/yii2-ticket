@@ -26,7 +26,7 @@ return [
     'Date' => 'Fecha',
     'Date Updated' => 'Editado',
     'Delete' => 'Borrar',
-    'Departament' => 'Departamento',
+    'Department' => 'Departamento',
     'Developer' => 'Programador',
     'Do you really want to delete?' => 'Seguro que queres borrar el ticket',
     'Document name' => 'Nombre del Documento',

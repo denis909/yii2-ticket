@@ -42,7 +42,7 @@ $this->title = 'Support';
 
 <div class="form-group">
 
-    <?= Html::submitButton(Yii::t('ticket', 'Create'), ['class' => 'btn btn-primary']);?>
+    <?= Html::submitButton(Yii::t('ticket', 'Send Ticket'), ['class' => 'btn btn-primary']);?>
 
 </div>
 

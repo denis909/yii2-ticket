@@ -8,7 +8,7 @@ $this->title = 'Support';
 
 $this->params['enableCard'] = true;
 
-$this->params['cardTitle'] = 'New Ticket';
+$this->params['cardTitle'] = 'Create New Ticket';
 
 /** @var \ricco\ticket\models\TicketHead $ticketHead */
 /** @var \ricco\ticket\models\TicketBody $ticketBody */

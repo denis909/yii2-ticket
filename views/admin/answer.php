@@ -47,10 +47,8 @@ $this->params['actionMenu'][] = [
 <?php foreach ($thisTicket as $ticket) : ?>
     <div class="card mb-2">
         <div class="card-header">
-            <span><?= $ticket->userName;?> <span
-                        style="font-size: 12px"><?= ($ticket['is_client'] == 0) ? '' : '(' . Yii::t('ticket', 'Client') . ')';?>
-                    </span></span>
-            <span class="pull-right"><?= $ticket['date'] ?></span>
+            <span><?= $ticket->userName;?></span>
+            <span style="float: right;"><?= $ticket->formattedDate;?></span>
         </div>
         <div class="card-body">
             <?= nl2br(Html::encode($ticket['text'])) ?>

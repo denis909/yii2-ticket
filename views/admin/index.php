@@ -20,7 +20,18 @@ $this->title = 'Support';
 <?= Yii::$app->backendTheme->gridView([
     'dataProvider' => $dataProvider,
     'columns' => [
-        'id',
+        [
+            'attribute' => 'id',
+            'headerOptions' => [
+                'style' => 'white-space: nowrap;'
+            ],            
+            'contentOptions' => [
+                'style' => 'text-align: right; width: 1%;'
+            ],
+            'value' => function($model) {
+                return '#' . $model->id;
+            }            
+        ],
         [
             'attribute' => 'user_id',
             'value' => 'userName',

@@ -9,31 +9,38 @@ $this->title = 'Support';
 
 $this->params['enableCard'] = true;
 
-$this->params['cardTitle'] = 'Tickets';
+$this->params['cardTitle'] = 'All Tickets';
 
 $this->params['actionMenu'][] = [
-    'label' => Yii::t('ticket', 'New Ticket'),
+    'label' => Yii::t('ticket', 'Create New Ticket'),
     'url' => Url::to(['ticket/open'])
 ];
 
 echo Yii::$app->theme->gridView([
     'dataProvider' => $dataProvider,
     'columns' => [
+        [
+            'attribute' => 'id',
+            'headerOptions' => [
+                'style' => 'white-space: nowrap;'
+            ],
+            'contentOptions' => [
+                'style' => 'text-align: right; width: 1%;'
+            ],
+            'value' => function($model) {
+                return '#' . $model->id;
+            }
+        ],        
         'topic',
         [
             'attribute' => 'department',
             'value' => function($model) {
-                
                 return $model->departmentName;
             }
         ],
         [
             'attribute' => 'status',
-            'contentOptions' => [
-                'style' => 'text-align:center;',
-            ],
             'value' => function ($model) {
-
                 return '<div class="label label-' . $model->statusLabel. '">' . $model->statusName . '</div>';
             },
             'format' => 'html'

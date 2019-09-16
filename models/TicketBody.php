@@ -109,4 +109,9 @@ class TicketBody extends \yii\db\ActiveRecord
         return $this->hasOne(TicketHead::class, ['id' => 'id_head']);
     }
 
+    public function getFormattedDate()
+    {
+        return date('Y-m-d H:i', strtotime($this->date));
+    }
+
 }

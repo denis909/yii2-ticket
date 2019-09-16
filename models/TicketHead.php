@@ -42,6 +42,14 @@ class TicketHead extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+    public static function find()
+    {
+        return new TicketHeadQuery(get_called_class());
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [

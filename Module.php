@@ -27,7 +27,7 @@ class Module extends \yii\base\Module
     {
         Yii::$app->i18n->translations['ticket'] = [
             'class' => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
+            'sourceLanguage' => false,
             'basePath' => '@ricco/ticket/messages',
             'fileMap' => [
               'ticket' => 'ticket.php',

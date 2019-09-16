@@ -30,15 +30,13 @@ class AdminController extends \ricco\ticket\components\BaseAdminController
             'query' => $query,
             'sort' => [
                 'defaultOrder' => [
-                    'date_update' => SORT_ASC
+                    'date_update' => SORT_DESC
                 ]
             ],
             'pagination' => [
                 'pageSize' => Yii::$app->ticket->pageSize
             ]
         ]);
-
-        Url::remember();
 
         return $this->render('index', ['dataProvider' => $dataProvider]);
     }
@@ -67,7 +65,7 @@ class AdminController extends \ricco\ticket\components\BaseAdminController
 
         if (Yii::$app->request->post())
         {
-            $newTicket->load(\Yii::$app->request->post());
+            $newTicket->load(Yii::$app->request->post());
         
             $newTicket->id_head = $ticketHead->id;
 
@@ -77,7 +75,7 @@ class AdminController extends \ricco\ticket\components\BaseAdminController
 
                 if ($ticketHead->save())
                 {
-                    return $this->redirect(Url::to()); 
+                    return $this->redirect(['index']); 
                 }
             }
         }
@@ -111,7 +109,7 @@ class AdminController extends \ricco\ticket\components\BaseAdminController
                 ->senda('closed');
         }
 
-        return $this->redirect(Url::previous());
+        return $this->redirect(['index']);
     }
 
     /**
@@ -152,7 +150,7 @@ class AdminController extends \ricco\ticket\components\BaseAdminController
                     
                     $ticketBody->save();
 
-                    $this->redirect(Url::previous());
+                    $this->redirect(['index']);
                 }
             }
         }
